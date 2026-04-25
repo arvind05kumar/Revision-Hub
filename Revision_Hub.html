@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NEET 2026 — Revision Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --border: #E8E2D8;
+    --text: #1A1610;
+    --text-muted: #7A7165;
+    --phy: #C84B31;
+    --phy-bg: #FDF1EE;
+    --phy-border: #F3C4B9;
+    --chem: #1B6CA8;
+    --chem-bg: #EEF5FB;
+    --chem-border: #B9D4EA;
+    --bio: #2D8653;
+    --bio-bg: #EEF7F2;
+    --bio-border: #B9DEC9;
+    --accent: #D4A017;
+    --done-bg: #E8F5EE;
+    --revise-bg: #FFF8E6;
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] {
+    --bg: #0F0D0A;
+    --surface: #1C1916;
+    --surface2: #242019;
+    --border: #2E2A24;
+    --text: #F0EDE6;
+    --text-muted: #847C72;
+    --phy-bg: #2A1611;
+    --phy-border: #5A2B1E;
+    --chem-bg: #0D1E2D;
+    --chem-border: #1B3D5C;
+    --bio-bg: #0D2018;
+    --bio-border: #1B4D30;
+    --done-bg: #0D2018;
+    --revise-bg: #2A2008;
+    --shadow: 0 2px 16px rgba(0,0,0,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* === TOP HEADER === */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 900; letter-spacing: -0.5px; }
+  .logo span { color: var(--bio); }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .dark-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .dark-btn:hover { background: var(--border); }
+
+  /* === HERO SECTION === */
+  .hero {
+    padding: 40px 32px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -1px;
+  }
+  .hero-subtitle { font-size: 0.95rem; color: var(--text-muted); margin-top: 6px; font-weight: 300; }
+  .exam-date-badge {
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .exam-date-badge .date-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
+  .exam-date-badge .date-val { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-top: 2px; }
+
+  /* === COUNTDOWN === */
+  .countdown-wrap {
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .countdown-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; }
+  .countdown-blocks { display: flex; gap: 16px; align-items: center; }
+  .cd-unit { text-align: center; }
+  .cd-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1;
+    min-width: 70px;
+  }
+  .cd-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.55; margin-top: 4px; }
+  .cd-sep { font-size: 2rem; opacity: 0.3; margin-top: -8px; }
+  .motivational-quote {
+    flex: 1;
+    min-width: 200px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.85;
+    border-left: 2px solid rgba(255,255,255,0.25);
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  /* === OVERALL PROGRESS === */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; }
+  .stat-bar { height: 4px; background: var(--border); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+  .stat-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+
+
+  /* === MAIN CONTENT === */
+  .main-content { max-width: 1100px; margin: 0 auto; padding: 0 32px 60px; }
+
+  /* === SUBJECT SECTIONS === */
+  .subject-section { margin-top: 36px; }
+  .subject-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .subject-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+  .subject-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+  .subject-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+  .subject-progress-wrap { margin-left: auto; text-align: right; }
+  .subject-pct { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+  .subject-bar { width: 120px; height: 5px; background: var(--border); border-radius: 99px; margin-top: 6px; overflow: hidden; }
+  .subject-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+
+  /* Physics colors */
+  .phy .subject-icon { background: var(--phy-bg); }
+  .phy .subject-bar-fill { background: var(--phy); }
+  .phy .subject-pct { color: var(--phy); }
+  /* Chem colors */
+  .chem .subject-icon { background: var(--chem-bg); }
+  .chem .subject-bar-fill { background: var(--chem); }
+  .chem .subject-pct { color: var(--chem); }
+  /* Bio colors */
+  .bio .subject-icon { background: var(--bio-bg); }
+  .bio .subject-bar-fill { background: var(--bio); }
+  .bio .subject-pct { color: var(--bio); }
+
+  /* === CLASS GROUPS === */
+  .class-group { margin-bottom: 20px; }
+  .class-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  /* === CHAPTER GRID === */
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+  .chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+    cursor: default;
+  }
+  .chapter-card.done { background: var(--done-bg); border-color: #B9DEC9; }
+  .chapter-card.revise { background: var(--revise-bg); border-color: #DEC97A; }
+  .chapter-card:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+  .ch-check-area { display: flex; flex-direction: column; gap: 4px; align-items: center; flex-shrink: 0; }
+  .ch-checkbox {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .ch-checkbox.checked { background: var(--bio); border-color: var(--bio); color: white; }
+  .ch-checkbox.revise-check { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .ch-info { flex: 1; min-width: 0; }
+  .ch-name { font-size: 0.85rem; font-weight: 500; line-height: 1.3; }
+  .ch-tags { display: flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .tag-high { background: #FFE8E4; color: #C84B31; }
+  [data-theme="dark"] .tag-high { background: #3D1A14; color: #E8836A; }
+  .tag-revise { background: #FFF0C0; color: #A07010; }
+  [data-theme="dark"] .tag-revise { background: #2D2000; color: #D4A017; }
+
+  .ch-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+  .action-btn {
+    font-size: 0.62rem;
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: var(--border); color: var(--text); }
+  .action-btn.done-btn:hover { background: var(--bio); color: white; border-color: var(--bio); }
+  .action-btn.revise-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .action-btn.undo-btn { background: var(--surface); }
+
+  /* === FOOTER === */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 680px) {
+    header, .hero, .main-content { padding-left: 16px; padding-right: 16px; }
+    .hero-top { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .countdown-blocks { gap: 10px; }
+    .cd-num { font-size: 2rem; min-width: 55px; }
+    .chapters-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NEET <span>2026</span> — Revision Hub</div>
+  <div class="header-right">
+    <button class="dark-btn" onclick="toggleDark()">🌙 Dark Mode</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-title">Your Final Sprint<br/>Starts Here. 🔥</div>
+      <div class="hero-subtitle">Track every chapter · Stay focused · Ace NEET 2026</div>
+    </div>
+    <div class="exam-date-badge">
+      <div class="date-label">Exam Date</div>
+      <div class="date-val">May 3, 2026</div>
+    </div>
+  </div>
+
+  <div class="countdown-wrap" id="countdownWrap">
+    <div>
+      <div class="countdown-label">Time Remaining</div>
+      <div class="countdown-blocks">
+        <div class="cd-unit">
+          <div class="cd-num" id="cd-days">--</div>
+          <div class="cd-label">Days</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit">
+          <div class="cd-num" id="cd-hours">--</div>
+          <div class="cd-label">Hours</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit">
+          <div class="cd-num" id="cd-mins">--</div>
+          <div class="cd-label">Mins</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit">
+          <div class="cd-num" id="cd-secs">--</div>
+          <div class="cd-label">Secs</div>
+        </div>
+      </div>
+    </div>
+    <div class="motivational-quote" id="motivationalQuote"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-val" id="overall-pct">0%</div>
+      <div class="stat-bar"><div class="stat-fill" id="overall-fill" style="width:0%;background:var(--bio)"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">⚛️ Physics</div>
+      <div class="stat-val" style="color:var(--phy)" id="phy-stat">0%</div>
+      <div class="stat-bar"><div class="stat-fill" id="phy-fill" style="width:0%;background:var(--phy)"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">🧪 Chemistry</div>
+      <div class="stat-val" style="color:var(--chem)" id="chem-stat">0%</div>
+      <div class="stat-bar"><div class="stat-fill" id="chem-fill" style="width:0%;background:var(--chem)"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">🌿 Biology</div>
+      <div class="stat-val" style="color:var(--bio)" id="bio-stat">0%</div>
+      <div class="stat-bar"><div class="stat-fill" id="bio-fill" style="width:0%;background:var(--bio)"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main-content" id="mainContent">
+  <!-- Rendered by JS -->
+</div>
+
+<footer>
+  Made with ❤️ for NEET 2026 &nbsp;·&nbsp; Progress saved automatically &nbsp;·&nbsp; All the best! 🌟
+</footer>
+
+<script>
+// ===== DATA =====
+const quotes = [
+  "The secret of getting ahead is getting started. Every chapter checked is a step to MBBS.",
+  "You didn't come this far to only come this far. Keep going, one chapter at a time.",
+  "Champions don't become champions in the ring — they are merely recognized there. Your work is happening NOW.",
+  "The harder you work, the luckier you get. Your future self is cheering you on.",
+  "Every expert was once a beginner. Today's revision is tomorrow's confidence.",
+  "Believe in yourself. You have studied this. Trust your preparation.",
+  "NEET 2026 is YOUR exam. Own it. One topic at a time.",
+  "Pressure creates diamonds. These 8 days will define your future.",
+];
+
+const syllabus = {
+  physics: {
+    color: "var(--phy)",
+    icon: "⚛️",
+    class11: [
+      { name: "Physics and Measurement", high: false },
+      { name: "Kinematics", high: false },
+      { name: "Laws of Motion", high: false },
+      { name: "Work, Energy and Power", high: false },
+      { name: "Rotational Motion", high: false },
+      { name: "Gravitation", high: false },
+      { name: "Properties of Solids and Liquids", high: false },
+      { name: "Thermodynamics", high: true },
+      { name: "Kinetic Theory of Gases", high: false },
+      { name: "Oscillations and Waves", high: false },
+    ],
+    class12: [
+      { name: "Electrostatics", high: true },
+      { name: "Current Electricity", high: true },
+      { name: "Magnetic Effects of Current & Magnetism", high: true },
+      { name: "Electromagnetic Induction & Alternating Currents", high: false },
+      { name: "Electromagnetic Waves", high: false },
+      { name: "Optics", high: true },
+      { name: "Dual Nature of Matter & Radiation", high: false },
+      { name: "Atoms and Nuclei", high: true },
+      { name: "Electronic Devices (Semiconductors)", high: false },
+    
+    ]
+  },
+  chemistry: {
+    color: "var(--chem)",
+    icon: "🧪",
+    class11: [
+      { name: "Some Basic Concepts of Chemistry", high: false },
+      { name: "Structure of Atom", high: false },
+      { name: "Classification of Elements & Periodicity", high: false },
+      { name: "Chemical Bonding & Molecular Structure", high: true },
+      
+      { name: "Thermodynamics", high: true },
+      { name: "Equilibrium", high: true },
+      { name: "Redox Reactions", high: false },
+      { name: "Hydrogen", high: false },
+      
+    ],
+    class12: [
+      { name: "p-Block Elements", high: true },
+      { name: "d and f Block Elements", high: false },
+      { name: "Coordination Compounds", high: true },
+      { name: "Haloalkanes and Haloarenes", high: false },
+      { name: "Alcohols, Phenols and Ethers", high: true },
+      { name: "Aldehydes, Ketones & Carboxylic Acids", high: true },
+      { name: "Organic Compounds containing Nitrogen", high: false },
+      { name: "Biomolecules", high: true },
+  ]   
+  },
+  biology: {
+    color: "var(--bio)",
+    icon: "🌿",
+    class11: [
+      { name: "Diversity in Living World", high: false },
+     
+      { name: "Structural Organisation in Animals", high: false },
+      { name: "Cell: The Unit of Life", high: true },
+      { name: "Biomolecules", high: true },
+      { name: "Cell Cycle and Cell Division", high: true },
+      
+      { name: "Photosynthesis in Higher Plants", high: true },
+      { name: "Respiration in Plants", high: false },
+      { name: "Plant Growth and Development", high: false },
+      
+      { name: "Breathing and Exchange of Gases", high: true },
+      { name: "Body Fluids and Circulation", high: true },
+      { name: "Excretory Products & Their Elimination", high: true },
+      { name: "Locomotion and Movement", high: false },
+      { name: "Neural Control & Coordination", high: true },
+      { name: "Chemical Coordination & Integration", high: true },
+    ],
+    class12: [
+      
+      { name: "Sexual Reproduction in Flowering Plants", high: true },
+      { name: "Human Reproduction", high: true },
+      { name: "Reproductive Health", high: false },
+      { name: "Principles of Inheritance & Variation", high: true },
+      { name: "Molecular Basis of Inheritance", high: true },
+      { name: "Evolution", high: false },
+      { name: "Human Health and Disease", high: true },
+      { name: "Microbes in Human Welfare", high: false },
+      { name: "Biotechnology: Principles & Processes", high: true },
+      { name: "Biotechnology and its Applications", high: true },
+      { name: "Organisms & Populations", high: false },
+      { name: "Ecosystem", high: true },
+      { name: "Biodiversity and Conservation", high: false },
+      
+    ]
+  }
+};
+
+const subjectDisplayNames = {
+  physics: "Physics",
+  chemistry: "Chemistry",
+  biology: "Biology"
+};
+
+// ===== STATE =====
+let progress = JSON.parse(localStorage.getItem('neet2026_v3') || '{}');
+
+function getChapterId(subject, classKey, idx) {
+  return `${subject}_${classKey}_${idx}`;
+}
+function getState(id) { return progress[id] || 'none'; } // none | done | revise
+function setState(id, st) {
+  progress[id] = st;
+  localStorage.setItem('neet2026_v3', JSON.stringify(progress));
+}
+
+// ===== RENDER =====
+function render() {
+  const container = document.getElementById('mainContent');
+  let html = '';
+
+  for (const [subjectKey, data] of Object.entries(syllabus)) {
+    const allChapters = [...data.class11, ...data.class12];
+    const total = allChapters.length;
+    const doneCount = allChapters.filter((_, i) => {
+      const cls = i < data.class11.length ? 'class11' : 'class12';
+      const idx = i < data.class11.length ? i : i - data.class11.length;
+      return getState(getChapterId(subjectKey, cls, idx)) === 'done';
+    }).length;
+    const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+    html += `
+    <div class="subject-section ${subjectKey.substring(0,3)}">
+      <div class="subject-header ${subjectKey.substring(0,3)}">
+        <div class="subject-icon">${data.icon}</div>
+        <div>
+          <div class="subject-name">${subjectDisplayNames[subjectKey]}</div>
+          <div class="subject-meta">${doneCount} / ${total} chapters done</div>
+        </div>
+        <div class="subject-progress-wrap">
+          <div class="subject-pct">${pct}%</div>
+          <div class="subject-bar">
+            <div class="subject-bar-fill" style="width:${pct}%;background:${data.color}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const classGroups = { class11: 'Class 11', class12: 'Class 12' };
+    for (const [classKey, classLabel] of Object.entries(classGroups)) {
+      const chapters = data[classKey];
+      html += `<div class="class-group"><div class="class-label">${classLabel}</div><div class="chapters-grid">`;
+      chapters.forEach((ch, idx) => {
+        const id = getChapterId(subjectKey, classKey, idx);
+        const state = getState(id);
+        let cardClass = 'chapter-card';
+        if (state === 'done') cardClass += ' done';
+        if (state === 'revise') cardClass += ' revise';
+
+        const checkIcon = state === 'done' ? '✓' : (state === 'revise' ? '↺' : '');
+        const checkClass = state === 'done' ? 'ch-checkbox checked' : (state === 'revise' ? 'ch-checkbox revise-check' : 'ch-checkbox');
+
+        let actions = '';
+        if (state === 'none') {
+          actions = `
+            <button class="action-btn done-btn" onclick="markChapter('${id}','done')">✓ Done</button>
+            <button class="action-btn revise-btn" onclick="markChapter('${id}','revise')">↺ Revise</button>
+          `;
+        } else {
+          actions = `<button class="action-btn undo-btn" onclick="markChapter('${id}','none')">✕ Undo</button>`;
+        }
+
+        html += `
+        <div class="chapter-card ${state !== 'none' ? state : ''}" id="card-${id}">
+          <div class="ch-checkbox ${checkClass.split(' ').slice(1).join(' ')}">${checkIcon}</div>
+          <div class="ch-info">
+            <div class="ch-name">${ch.name}</div>
+            <div class="ch-tags">
+              ${ch.high ? '<span class="tag tag-high">⭐ High Weightage</span>' : ''}
+              ${state === 'revise' ? '<span class="tag tag-revise">↺ Revise Again</span>' : ''}
+            </div>
+          </div>
+          <div class="ch-actions">${actions}</div>
+        </div>
+        `;
+      });
+      html += `</div></div>`;
+    }
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+  updateStats();
+}
+
+function markChapter(id, state) {
+  setState(id, state);
+  render();
+}
+
+function updateStats() {
+  let totalAll = 0, doneAll = 0;
+  const subjectStats = {};
+
+  for (const [subjectKey, data] of Object.entries(syllabus)) {
+    const allChapters = [...data.class11, ...data.class12];
+    const total = allChapters.length;
+    const done = allChapters.filter((_, i) => {
+      const cls = i < data.class11.length ? 'class11' : 'class12';
+      const idx = i < data.class11.length ? i : i - data.class11.length;
+      return getState(getChapterId(subjectKey, cls, idx)) === 'done';
+    }).length;
+    subjectStats[subjectKey] = { total, done, pct: Math.round((done / total) * 100) };
+    totalAll += total; doneAll += done;
+  }
+
+  const overallPct = totalAll > 0 ? Math.round((doneAll / totalAll) * 100) : 0;
+  document.getElementById('overall-pct').textContent = overallPct + '%';
+  document.getElementById('overall-fill').style.width = overallPct + '%';
+
+  document.getElementById('phy-stat').textContent = subjectStats.physics.pct + '%';
+  document.getElementById('phy-fill').style.width = subjectStats.physics.pct + '%';
+  document.getElementById('chem-stat').textContent = subjectStats.chemistry.pct + '%';
+  document.getElementById('chem-fill').style.width = subjectStats.chemistry.pct + '%';
+  document.getElementById('bio-stat').textContent = subjectStats.biology.pct + '%';
+  document.getElementById('bio-fill').style.width = subjectStats.biology.pct + '%';
+}
+
+// ===== COUNTDOWN =====
+function updateCountdown() {
+  const exam = new Date('2026-05-03T00:00:00+05:30').getTime();
+  const now = Date.now();
+  const diff = exam - now;
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '00';
+    document.getElementById('cd-hours').textContent = '00';
+    document.getElementById('cd-mins').textContent = '00';
+    document.getElementById('cd-secs').textContent = '00';
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent = String(d).padStart(2, '0');
+  document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(m).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(s).padStart(2, '0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ===== QUOTES =====
+document.getElementById('motivationalQuote').textContent = quotes[new Date().getDate() % quotes.length];
+
+// ===== DARK MODE =====
+function toggleDark() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.querySelector('.dark-btn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+  localStorage.setItem('neet2026_theme', isDark ? '' : 'dark');
+}
+
+// Load theme
+const savedTheme = localStorage.getItem('neet2026_theme');
+if (savedTheme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.querySelector('.dark-btn').textContent = '☀️ Light Mode';
+}
+
+// ===== INIT =====
+render();
+</script>
+</body>
+</html>
